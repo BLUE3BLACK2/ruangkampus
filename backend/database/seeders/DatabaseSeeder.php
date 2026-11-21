@@ -7,40 +7,40 @@ use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Password comes from .env (SEED_PASSWORD) so no credential lives in the
+        // repository. Without it a random one is generated and printed once.
+        $password = env('SEED_PASSWORD') ?: Str::password(16);
+        $generated = ! env('SEED_PASSWORD');
+
         // 1. Seed akun pengguna
-        User::updateOrCreate(
-            ['email' => 'admin@ruangkuliah.test'],
-            [
-                'name' => 'Admin',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-            ]
-        );
+        $accounts = [
+            ['admin@ruangkuliah.test', 'Admin', 'admin', null, null],
+            ['prema@ruangkuliah.test', 'Premadharma', 'mahasiswa', '2415101056', null],
+            ['agus@ruangkuliah.test', 'Ir. Ketut Agus Seputra, S.ST., M.T.', 'dosen', null, '199008152019031018'],
+        ];
 
-        User::updateOrCreate(
-            ['email' => 'prema@ruangkuliah.test'],
-            [
-                'name' => 'Premadharma',
-                'password' => Hash::make('password'),
-                'role' => 'mahasiswa',
-                'nim' => '2415101056',
-            ]
-        );
+        foreach ($accounts as [$email, $name, $role, $nim, $nip]) {
+            User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'password' => Hash::make($password),
+                    'role' => $role,
+                    'nim' => $nim,
+                    'nip' => $nip,
+                ]
+            );
+        }
 
-        User::updateOrCreate(
-            ['email' => 'agus@ruangkuliah.test'],
-            [
-                'name' => 'Ir. Ketut Agus Seputra, S.ST., M.T.',
-                'password' => Hash::make('password'),
-                'role' => 'dosen',
-                'nip' => ' 199008152019031018',
-            ]
-        );
+        if ($generated) {
+            $this->command?->warn("SEED_PASSWORD tidak di-set. Password akun seed: {$password}");
+        }
 
         // 2. Seed fasilitas
         $facilityData = [

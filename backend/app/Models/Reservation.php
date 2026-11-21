@@ -62,12 +62,49 @@ class Reservation extends Model
     }
 
     /** Reservations on a given date that overlap [start, end) for a room. */
-    public function scopeOverlapping(Builder $query, int $roomId, string $date, string $start, string $end): Builder
-    {
+    public function scopeOverlapping(
+        Builder $query,
+        int $roomId,
+        string $date,
+        string $start,
+        string $end,
+        ?int $ignoreId = null,
+    ): Builder {
         return $query->where('room_id', $roomId)
             ->whereDate('reservation_date', $date)
             ->whereIn('status', self::BLOCKING_STATUSES)
             ->where('start_time', '<', $end)
-            ->where('end_time', '>', $start);
+            ->where('end_time', '>', $start)
+            ->when($ignoreId, fn (Builder $q) => $q->whereKeyNot($ignoreId));
+    }
+
+    /**
+     * Slot check used when storing or rescheduling a reservation.
+     * Pass $ignoreId when updating so a row never collides with itself.
+     */
+    public static function slotTaken(
+        int $roomId,
+        string $date,
+        string $start,
+        string $end,
+        ?int $ignoreId = null,
+    ): bool {
+        return static::overlapping($roomId, $date, $start, $end, $ignoreId)->exists();
+    }
+
+    /**
+     * Append a status-change row to reservation_logs.
+     * Creation, approval, rejection and cancellation all route through here.
+     * $previous is explicit because after save() the model's original status
+     * already equals the new one.
+     */
+    public function logStatus(?string $previous = null, ?User $admin = null, ?string $notes = null): ReservationLog
+    {
+        return $this->logs()->create([
+            'admin_id' => $admin?->id,
+            'previous_status' => $previous,
+            'new_status' => $this->status,
+            'notes' => $notes ?? $this->admin_notes,
+        ]);
     }
 }

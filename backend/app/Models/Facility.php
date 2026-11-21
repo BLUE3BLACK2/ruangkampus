@@ -15,13 +15,13 @@ class Facility extends Model
         'description',
     ];
 
-    public function rooms()
+    public function rooms(): BelongsToMany
     {
-    return $this->belongsToMany(
-        Room::class,
-        'room_facility',
-        'facility_id',
-        'room_id'
+        return $this->belongsToMany(
+            Room::class,
+            'room_facility',
+            'facility_id',
+            'room_id'
         );
     }
 }
