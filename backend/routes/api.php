@@ -1,6 +1,6 @@
-
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +11,15 @@ Route::get('/test', function () {
         'message' => 'API RuangKuliah berhasil terhubung!',
         'application' => 'RuangKuliah'
     ]);
+});
+
+// Authentication
+Route::post('/register', [AuthController::class, 'register'])->middleware('turnstile');
+Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:10,1', 'turnstile']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
 });
 
 // Public room routes
