@@ -30,13 +30,18 @@ class ReservationOverlapTest extends TestCase
         ], $attrs));
     }
 
-    private function reservation(Room $room, string $start, string $end, string $status = 'pending'): Reservation
-    {
+    private function reservation(
+        Room $room,
+        string $start,
+        string $end,
+        string $status = 'pending',
+        ?User $user = null
+    ): Reservation {
         static $n = 0;
 
         return Reservation::create([
             'reservation_code' => 'RSV-'.++$n,
-            'user_id' => User::factory()->create()->id,
+            'user_id' => ($user ?? User::factory()->create())->id,
             'room_id' => $room->id,
             'reservation_date' => '2026-12-01',
             'start_time' => $start,
@@ -138,13 +143,14 @@ class ReservationOverlapTest extends TestCase
         $facility = Facility::create(['name' => 'Proyektor-'.fake()->unique()->numerify('###')]);
         $room->facilities()->attach($facility->id);
 
-        $reservation = $this->reservation($room, '08:00', '10:00');
+        $user = User::factory()->create();
+        $reservation = $this->reservation($room, '08:00', '10:00', 'pending', $user);
 
-        $this->assertTrue($reservation->user->is($reservation->user));
+        $this->assertTrue($reservation->user->is($user));
         $this->assertTrue($reservation->room->is($room));
         $this->assertTrue($room->facilities->first()->is($facility));
         $this->assertTrue($facility->rooms->first()->is($room));
         $this->assertCount(1, $room->reservations);
-        $this->assertCount(1, $reservation->user->reservations);
+        $this->assertCount(1, $user->reservations);
     }
 }
