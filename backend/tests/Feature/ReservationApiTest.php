@@ -283,7 +283,7 @@ class ReservationApiTest extends TestCase
 
         $this->getJson('/api/reservations')
             ->assertOk()
-            ->assertJsonPath('success', true)
+            ->assertJsonStructure(['data', 'links', 'meta'])
             ->assertJsonCount(2, 'data')
             ->assertJsonPath('meta.total', 2);
     }

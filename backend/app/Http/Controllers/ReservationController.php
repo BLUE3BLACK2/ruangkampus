@@ -8,6 +8,7 @@ use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -16,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 class ReservationController extends Controller
 {
     /** Riwayat reservasi milik pengguna yang sedang login. */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $validated = $request->validate([
             'status' => ['nullable', Rule::in(Reservation::STATUSES)],
@@ -34,17 +35,7 @@ class ReservationController extends Controller
             ->paginate($validated['per_page'] ?? 10)
             ->withQueryString();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Riwayat reservasi berhasil diambil.',
-            'data' => ReservationResource::collection($paginator)->resolve(),
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
-        ]);
+        return ReservationResource::collection($paginator);
     }
 
     /** Detail reservasi: hanya pemilik atau admin. */

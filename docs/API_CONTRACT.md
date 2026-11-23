@@ -318,14 +318,13 @@ Hanya reservasi milik pengguna yang login, diurutkan dari yang terbaru.
 
 Query opsional: `status` (salah satu status di atas), `per_page` (1–100, default 10), `page`.
 
-Response `200`:
+Response `200` memakai paginasi bawaan Laravel, sama seperti endpoint ruangan. Respons daftar tidak memuat `success` dan `message`:
 
 ```json
 {
-  "success": true,
-  "message": "Riwayat reservasi berhasil diambil.",
   "data": [ { "...objek reservasi dengan room..." } ],
-  "meta": { "current_page": 1, "last_page": 1, "per_page": 10, "total": 1 }
+  "links": { "first": "...", "last": "...", "prev": null, "next": null },
+  "meta": { "current_page": 1, "from": 1, "last_page": 1, "per_page": 10, "to": 1, "total": 1 }
 }
 ```
 
@@ -355,7 +354,7 @@ Khusus admin. Query opsional:
 | `search`           | cari berdasarkan kode reservasi atau nama pemohon |
 | `per_page`, `page` | paginasi, sama seperti daftar pengguna            |
 
-Bentuk response sama dengan daftar pengguna, tetapi setiap item memuat `room` dan `user`.
+Bentuk response sama dengan daftar pengguna (`data`, `links`, `meta`), tetapi setiap item memuat `room` dan `user`.
 
 #### PATCH /api/admin/reservations/{id}/approve
 

@@ -112,7 +112,7 @@ class AdminReservationApiTest extends TestCase
 
         $this->getJson('/api/admin/reservations')
             ->assertOk()
-            ->assertJsonPath('success', true)
+            ->assertJsonStructure(['data', 'links', 'meta'])
             ->assertJsonCount(3, 'data')
             ->assertJsonPath('meta.total', 3)
             ->assertJsonStructure(['data' => ['*' => ['id', 'reservation_code', 'status', 'room', 'user']]]);

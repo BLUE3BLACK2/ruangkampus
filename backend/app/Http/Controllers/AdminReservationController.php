@@ -6,6 +6,7 @@ use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -13,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 class AdminReservationController extends Controller
 {
     /** Seluruh permohonan reservasi, dengan filter opsional. */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $validated = $request->validate([
             'status' => ['nullable', Rule::in(Reservation::STATUSES)],
@@ -47,17 +48,7 @@ class AdminReservationController extends Controller
             ->paginate($validated['per_page'] ?? 10)
             ->withQueryString();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Daftar reservasi berhasil diambil.',
-            'data' => ReservationResource::collection($paginator)->resolve(),
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
-        ]);
+        return ReservationResource::collection($paginator);
     }
 
     /** Setujui reservasi. Catatan opsional. */
