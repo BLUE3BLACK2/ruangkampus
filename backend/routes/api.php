@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,12 @@ Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:1
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    // Reservations (pengguna yang login)
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::get('/reservations/{reservation}', [ReservationController::class, 'show']);
+    Route::patch('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel']);
 });
 
 // Public room routes
