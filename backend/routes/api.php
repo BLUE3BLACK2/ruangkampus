@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
@@ -53,4 +54,10 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::patch('/facilities/{facility}', [FacilityController::class, 'update']);
     Route::delete('/facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::put('/facilities/{facility}/rooms', [FacilityController::class, 'syncRooms']);
+
+
+    // Reservation management
+    Route::get('/admin/reservations', [AdminReservationController::class, 'index']);
+    Route::patch('/admin/reservations/{reservation}/approve', [AdminReservationController::class, 'approve']);
+    Route::patch('/admin/reservations/{reservation}/reject', [AdminReservationController::class, 'reject']);
 });
