@@ -5,6 +5,7 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/test', function () {
     return response()->json([
         'success' => true,

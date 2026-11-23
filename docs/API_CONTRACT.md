@@ -12,15 +12,15 @@ Dokumentasi ini menjadi acuan komunikasi antara frontend Next.js dan backend Lar
 
 ## 2. Standar API
 
-| Bagian | Standar |
-|---|---|
-| Format komunikasi | JSON |
-| Content-Type | application/json |
-| Penamaan endpoint | lowercase dan plural |
-| Penamaan field database | snake_case |
-| HTTP method | GET, POST, PUT, PATCH, DELETE |
-| Autentikasi | Laravel Sanctum |
-| Format response | Konsisten menggunakan JSON |
+| Bagian                  | Standar                       |
+| ----------------------- | ----------------------------- |
+| Format komunikasi       | JSON                          |
+| Content-Type            | application/json              |
+| Penamaan endpoint       | lowercase dan plural          |
+| Penamaan field database | snake_case                    |
+| HTTP method             | GET, POST, PUT, PATCH, DELETE |
+| Autentikasi             | Laravel Sanctum               |
+| Format response         | Konsisten menggunakan JSON    |
 
 ## 3. Standar Penamaan
 
@@ -65,91 +65,148 @@ Catatan: Format di atas merupakan standar target integrasi. Implementasi aktual 
 
 ### 5.1 Authentication
 
-Modul untuk login, registrasi, logout, dan pengelolaan akun pengguna.
+Status: Implementasi backend selesai dan sudah di-merge ke main.
 
-Status: Menunggu konfirmasi implementasi backend.
+Endpoint:
+
+- POST `/api/register`
+- POST `/api/login`
+- POST `/api/logout`
+- GET `/api/me`
+
+Authentication menggunakan Laravel Sanctum untuk autentikasi token.
+Register dan login menggunakan verifikasi Cloudflare Turnstile.
+
+Dokumentasi request, response, dan validasi mengikuti implementasi AuthController dan middleware VerifyTurnstile.
 
 ### 5.2 Rooms
 
-Modul untuk menampilkan dan mengelola data ruangan.
+Status: Implementasi backend selesai dan sudah di-merge ke main.
 
-Field utama:
-- `id`
-- `room_code`
-- `room_name`
-- `building`
-- `floor`
-- `capacity`
-- `description`
-- `image`
-- `status`
-- `facilities`
+Room API sudah tersedia untuk:
 
-Status: Implementasi backend sedang dikembangkan.
+- Menampilkan daftar ruangan.
+- Menampilkan detail ruangan.
+- Menampilkan daftar ruangan untuk admin.
+- Menambahkan ruangan.
+- Memperbarui ruangan.
+- Menghapus ruangan.
+
+Endpoint dan format response mengikuti implementasi RoomController dan RoomResource.
+
+Dokumentasi teknis lebih lanjut:
+`HANDOVER_ROOMS_FACILITIES.md`
 
 ### 5.3 Facilities
 
-Modul untuk menampilkan dan mengelola fasilitas ruangan.
+Status: Implementasi backend selesai dan sudah di-merge ke main.
 
-Field utama:
-- `id`
-- `name`
-- `description`
+Facility API sudah tersedia untuk:
 
-Status: Implementasi backend sedang dikembangkan.
+- Menampilkan daftar fasilitas.
+- Menampilkan detail fasilitas.
+- Menambahkan fasilitas.
+- Memperbarui fasilitas.
+- Menghapus fasilitas.
+- Mengatur relasi fasilitas dengan ruangan.
+
+Endpoint dan format response mengikuti implementasi FacilityController dan FacilityResource.
+
+Dokumentasi teknis lebih lanjut:
+`HANDOVER_ROOMS_FACILITIES.md`
 
 ### 5.4 Reservations
 
-Modul untuk mengelola pemesanan ruangan.
+Status: Dalam pengerjaan oleh Kenia.
 
-Field utama:
-- `id`
-- `reservation_code`
-- `user_id`
-- `room_id`
-- `reservation_date`
-- `start_time`
-- `end_time`
-- `purpose`
-- `participant_count`
-- `status`
-- `admin_notes`
-- `reviewed_by`
-- `reviewed_at`
+Endpoint yang menjadi target:
 
-Status: Menunggu konfirmasi implementasi backend.
+- Membuat reservasi.
+- Menampilkan daftar reservasi pengguna.
+- Menampilkan detail reservasi.
+- Membatalkan reservasi.
+- Menampilkan seluruh reservasi untuk admin.
+- Menyetujui reservasi.
+- Menolak reservasi.
+
+Detail endpoint, request, response, dan validasi akan diperbarui setelah implementasi backend selesai dan di-merge ke main.
 
 ## 6. Role dan Hak Akses
 
-| Role | Hak akses |
-|---|---|
-| admin | Mengelola data dan persetujuan reservasi |
-| mahasiswa | Melihat ruangan dan membuat reservasi |
-| dosen | Melihat ruangan dan membuat reservasi |
+| Role      | Hak akses                                |
+| --------- | ---------------------------------------- |
+| admin     | Mengelola data dan persetujuan reservasi |
+| mahasiswa | Melihat ruangan dan membuat reservasi    |
+| dosen     | Melihat ruangan dan membuat reservasi    |
 
 Detail authorization mengikuti implementasi middleware dan backend.
 
-## 7. Autentikasi dan Keamanan
+## 7. Security
 
-- Autentikasi menggunakan Laravel Sanctum.
-- CAPTCHA/browser verification menggunakan token terpisah dari Sanctum.
-- Secret key CAPTCHA hanya disimpan di backend.
-- Endpoint yang memerlukan autentikasi harus mengirim token Sanctum.
-- Hak akses harus divalidasi di backend.
+### Authentication
+
+- Menggunakan Laravel Sanctum.
+- Token dikirim melalui header `Authorization: Bearer {token}`.
+- Endpoint yang membutuhkan autentikasi menggunakan middleware `auth:sanctum`.
+
+### Role Authorization
+
+Sistem menggunakan tiga role:
+
+- `admin`
+- `mahasiswa`
+- `dosen`
+
+Endpoint khusus admin menggunakan middleware otorisasi admin.
+
+### Cloudflare Turnstile
+
+- Register dan login menggunakan verifikasi Cloudflare Turnstile.
+- Frontend mengirim token melalui field `turnstile_token`.
+- Backend memverifikasi token menggunakan TurnstileService.
+- Secret Key hanya disimpan di environment backend.
+
+### Token Expiration
+
+Kebijakan masa berlaku token Sanctum masih menunggu keputusan tim.
 
 ## 8. Integrasi Frontend
 
 Frontend menggunakan Axios untuk mengakses backend.
 
 Ketentuan:
+
 - Base URL diambil dari environment variable.
 - Request dan response mengikuti kontrak API.
 - Nama field frontend harus sesuai dengan JSON backend.
 - Penanganan loading dan error dilakukan pada frontend.
 
-## 9. Catatan Integrasi
+## 9. Integration Notes
 
-- Endpoint dan response aktual akan diperbarui setelah implementasi backend dikonfirmasi.
-- Jangan membuat endpoint atau field baru tanpa koordinasi.
-- Perubahan kontrak API harus dikomunikasikan kepada seluruh anggota tim.
-- Dokumentasi ini akan diperbarui selama proses pengembangan.
+Status integrasi backend:
+
+| Modul          | Status                                |
+| -------------- | ------------------------------------- |
+| Authentication | Selesai dan merged                    |
+| Rooms          | Selesai dan merged                    |
+| Facilities     | Selesai dan merged                    |
+| Reservations   | Dalam pengerjaan                      |
+| Turnstile      | Fondasi backend dan frontend tersedia |
+
+Catatan integrasi:
+
+1. Frontend menggunakan API dari backend Laravel.
+2. Base URL API menggunakan konfigurasi environment `NEXT_PUBLIC_API_URL`.
+3. Authentication menggunakan token Sanctum.
+4. Register dan login harus mengirim `turnstile_token`.
+5. Role pengguna harus mengikuti `admin`, `mahasiswa`, dan `dosen`.
+6. Nama field request dan response harus mengikuti implementasi backend.
+7. Dokumentasi Reservation akan diperbarui setelah API selesai.
+
+Pengujian backend terakhir:
+
+- 61 tests passed.
+- 175 assertions.
+- Tidak ada test yang gagal.
+
+Hasil pengujian tersebut mencakup seluruh feature dan unit test yang dijalankan, bukan berarti seluruh integrasi frontend-backend sudah selesai.
