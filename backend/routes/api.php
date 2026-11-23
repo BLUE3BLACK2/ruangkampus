@@ -7,6 +7,7 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoomAssistantController;
 
 
 Route::get('/test', function () {
@@ -38,6 +39,17 @@ Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
 // Public facility routes
 Route::get('/facilities', [FacilityController::class, 'index']);
+
+Route::middleware('auth:sanctum')
+    ->prefix('room-assistant')
+    ->controller(RoomAssistantController::class)
+    ->group(function () {
+        Route::post('/recommendations', 'recommendations')
+            ->middleware('throttle:20,1');
+
+        Route::post('/ask', 'ask')
+            ->middleware('throttle:5,1');
+    });
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
