@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\RoomAnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\FacilityController;
@@ -56,6 +57,15 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::put('/facilities/{facility}/rooms', [FacilityController::class, 'syncRooms']);
 
+    // Room analytics
+    Route::prefix('admin/analytics')
+        ->controller(RoomAnalyticsController::class)
+        ->group(function () {
+            Route::get('/overview', 'overview');
+            Route::get('/predictions', 'predictions');
+            Route::post('/insights', 'generateInsights')
+                ->middleware('throttle:5,1');
+        });
 
     // Reservation management
     Route::get('/admin/reservations', [AdminReservationController::class, 'index']);
