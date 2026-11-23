@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\RoomAnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\RoomController;
@@ -47,4 +48,14 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::patch('/facilities/{facility}', [FacilityController::class, 'update']);
     Route::delete('/facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::put('/facilities/{facility}/rooms', [FacilityController::class, 'syncRooms']);
+
+    // Room analytics
+    Route::prefix('admin/analytics')
+        ->controller(RoomAnalyticsController::class)
+        ->group(function () {
+            Route::get('/overview', 'overview');
+            Route::get('/predictions', 'predictions');
+            Route::post('/insights', 'generateInsights')
+                ->middleware('throttle:5,1');
+        });
 });
