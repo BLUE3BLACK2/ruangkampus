@@ -40,4 +40,10 @@ return [
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
     ],
 
+    'datio' => [
+        'base_url' => env('DATIO_BASE_URL'),
+        'api_key' => env('DATIO_API_KEY'),
+        'model_id' => env('DATIO_MODEL_ID'),
+    ],
+
 ];
