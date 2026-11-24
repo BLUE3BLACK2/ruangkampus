@@ -21,6 +21,7 @@ class RoomUsageAnalyticsService
     public function overview(): array
     {
         [$startDate, $endDate] = $this->historicalPeriod();
+        $totalAllReservations = Reservation::query()->count();
 
         $baseQuery = Reservation::query()
             ->where('status', 'approved')
@@ -74,6 +75,8 @@ class RoomUsageAnalyticsService
             ),
 
             'data_basis' => 'approved_reservations',
+
+            'total_reservations' => $totalAllReservations,
 
             'total_approved_reservations' => $totalReservations,
 

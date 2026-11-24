@@ -17,6 +17,7 @@ class FacilityResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'rooms_count' => $this->whenCounted('rooms'),
+            'rooms' => RoomResource::collection($this->whenLoaded('rooms')),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
