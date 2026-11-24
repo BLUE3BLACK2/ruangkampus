@@ -24,6 +24,11 @@ class AdminReservationController extends Controller
             'per_page' => ['nullable', 'integer', 'between:1,100'],
         ]);
 
+        $statusCounts = Reservation::query()
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         $paginator = Reservation::query()
             ->with(['room', 'user'])
             ->when(
@@ -48,7 +53,15 @@ class AdminReservationController extends Controller
             ->paginate($validated['per_page'] ?? 10)
             ->withQueryString();
 
-        return ReservationResource::collection($paginator);
+        return ReservationResource::collection($paginator)->additional([
+            'summary' => [
+                'total' => Reservation::count(),
+                'pending' => (int) ($statusCounts['pending'] ?? 0),
+                'approved' => (int) ($statusCounts['approved'] ?? 0),
+                'rejected' => (int) ($statusCounts['rejected'] ?? 0),
+                'cancelled' => (int) ($statusCounts['cancelled'] ?? 0),
+            ],
+        ]);
     }
 
     /** Setujui reservasi. Catatan opsional. */

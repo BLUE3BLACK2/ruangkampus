@@ -35,7 +35,9 @@ class FacilityController extends Controller
 
     public function show(Facility $facility): FacilityResource
     {
-        return FacilityResource::make($facility->loadCount('rooms'));
+        return FacilityResource::make(
+            $facility->load(['rooms'])->loadCount('rooms')
+        );
     }
 
     public function store(Request $request): JsonResponse
