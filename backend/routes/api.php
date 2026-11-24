@@ -8,8 +8,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomAssistantController;
-use App\Http\Controllers\Admin\RoomAnalyticsController;
-
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -26,6 +25,8 @@ Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:1
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/me', [AuthController::class, 'updateProfile']);
+    Route::put('/me/password', [AuthController::class, 'updatePassword']);
 
     // Reservations (pengguna yang login)
     Route::get('/reservations', [ReservationController::class, 'index']);
@@ -83,15 +84,13 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::put('/facilities/{facility}/rooms', [FacilityController::class, 'syncRooms']);
 
-    // Room analytics
-    Route::prefix('admin/analytics')
-        ->controller(RoomAnalyticsController::class)
-        ->group(function () {
-            Route::get('/overview', 'overview');
-            Route::get('/predictions', 'predictions');
-            Route::post('/insights', 'generateInsights')
-                ->middleware('throttle:5,1');
-        });
+    // User management
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::post('/admin/users', [UserController::class, 'store']);
+    Route::get('/admin/users/{user}', [UserController::class, 'show']);
+    Route::put('/admin/users/{user}', [UserController::class, 'update']);
+    Route::patch('/admin/users/{user}', [UserController::class, 'update']);
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy']);
 
     // Reservation management
     Route::get('/admin/reservations', [AdminReservationController::class, 'index']);
