@@ -5,6 +5,7 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomAssistantController;
+use App\Http\Controllers\Admin\RoomAnalyticsController;
 
 
 Route::get('/test', function () {
@@ -44,6 +45,19 @@ Route::middleware('auth:sanctum')
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+
+    // Admin analytics
+    Route::prefix('admin/analytics')
+        ->controller(RoomAnalyticsController::class)
+        ->group(function () {
+            Route::get('/overview', 'overview');
+            Route::get('/predictions', 'predictions');
+            Route::post('/insights', 'generateInsights')
+                ->middleware('throttle:5,1');
+
+            // Room demand heatmap
+            Route::get('/heatmap', 'heatmap');
+        });
 
     // Room management
     Route::get('/admin/rooms', [RoomController::class, 'adminIndex']);

@@ -26,5 +26,10 @@ return [
             'ROOM_TREND_MINIMUM_HISTORY_WEEKS',
             3
         ),
+        'analytics' => [
+         // Tanggal mulai data operasional RuangKuliah.
+        // Kosongkan untuk menggunakan tanggal reservasi tertua sebagai perkiraan.
+        'data_start_date' => env('ROOM_ANALYTICS_START_DATE', null),
+        ],
     ],
 ];
