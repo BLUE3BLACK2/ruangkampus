@@ -6,10 +6,14 @@ import { inputClass, subtitleClass, titleClass } from '@/components/ui/styles';
 import type { RoomStatus } from '@/types';
 import RoomCard from './RoomCard';
 import { useRoomList } from './useRooms';
+import RoomAssistant from "@/features/assistant/RoomAssistant";
 
 type StatusFilter = 'all' | RoomStatus;
 
 export default function RoomCatalog() {
+  <div className="mb-8">
+  <RoomAssistant />
+  </div>
   const { data, loading, error, reload } = useRoomList();
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');

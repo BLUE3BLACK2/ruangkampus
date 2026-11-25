@@ -1,21 +1,40 @@
-type Variant = 'primary' | 'outline' | 'ghost' | 'danger' | 'light' | 'lightOutline';
-type Size = 'md' | 'sm';
+
+type Variant =
+  | "primary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "light"
+  | "lightOutline";
+
+type Size = "md" | "sm";
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-lg border font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 disabled:cursor-not-allowed disabled:opacity-60';
+  "inline-flex items-center justify-center gap-2 border font-semibold transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315b48]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary: 'border-transparent bg-blue-600 text-white hover:bg-blue-700',
-  outline: 'border-blue-600 bg-white text-blue-600 hover:bg-blue-50',
-  ghost: 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100',
-  danger: 'border-transparent bg-red-600 text-white hover:bg-red-700',
-  light: 'border-transparent bg-white text-blue-700 hover:bg-blue-50',
-  lightOutline: 'border-white/70 bg-transparent text-white hover:bg-white/15',
+  primary:
+    "border-[#315b48] bg-[#315b48] text-white hover:border-[#254936] hover:bg-[#254936]",
+
+  outline:
+    "border-[#315b48] bg-transparent text-[#315b48] hover:bg-[#e9eee8]",
+
+  ghost:
+    "border-transparent bg-transparent text-[#555b52] hover:border-[#d9d7cc] hover:bg-[#eeece3]",
+
+  danger:
+    "border-[#a44439] bg-[#a44439] text-white hover:border-[#87372f] hover:bg-[#87372f]",
+
+  light:
+    "border-transparent bg-[#fffefa] text-[#315b48] hover:bg-[#eeece3]",
+
+  lightOutline:
+    "border-white/60 bg-transparent text-white hover:bg-white/10",
 };
 
 const sizes: Record<Size, string> = {
-  md: 'px-5 py-2.5 text-sm',
-  sm: 'px-3.5 py-1.5 text-sm',
+  md: "min-h-11 px-5 py-2.5 text-sm",
+  sm: "min-h-9 px-3.5 py-1.5 text-sm",
 };
 
 interface ButtonOptions {
@@ -24,15 +43,39 @@ interface ButtonOptions {
   block?: boolean;
 }
 
-// Dipakai untuk <button> maupun <Link> agar tampilannya sama
-export function buttonClass({ variant = 'primary', size = 'md', block = false }: ButtonOptions = {}): string {
-  return [base, variants[variant], sizes[size], block ? 'w-full' : ''].filter(Boolean).join(' ');
+// Dipakai untuk <button> maupun <Link>
+export function buttonClass({
+  variant = "primary",
+  size = "md",
+  block = false,
+}: ButtonOptions = {}): string {
+  return [
+    base,
+    variants[variant],
+    sizes[size],
+    "rounded-[5px]",
+    block ? "w-full" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
+// Form input
 export const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/25 aria-[invalid=true]:border-red-500';
+  "w-full rounded-[5px] border border-[#d9d7cc] bg-[#fffefa] px-3.5 py-3 text-sm text-[#292d27] placeholder:text-[#99998e] transition-colors duration-150 focus:border-[#315b48] focus:outline-none focus:ring-2 focus:ring-[#315b48]/10 aria-[invalid=true]:border-[#a44439] aria-[invalid=true]:focus:ring-[#a44439]/10";
 
-export const panelClass = 'rounded-2xl border border-slate-200 bg-white p-6 shadow-md';
-export const titleClass = 'text-2xl font-bold text-slate-900';
-export const subtitleClass = 'mb-6 mt-1 text-slate-500';
-export const backLinkClass = 'mb-4 inline-block text-sm font-medium text-blue-600 hover:underline';
+// Panel utama
+export const panelClass =
+  "rounded-[7px] border border-[#d9d7cc] bg-[#fffefa] p-5 sm:p-7";
+
+// Judul halaman
+export const titleClass =
+  "text-2xl font-semibold tracking-tight text-[#292d27] sm:text-[2rem]";
+
+// Deskripsi halaman
+export const subtitleClass =
+  "mb-6 mt-2 max-w-2xl text-sm leading-7 text-[#77796f]";
+
+// Tautan kembali
+export const backLinkClass =
+  "mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#315b48] transition-colors hover:text-[#254936] hover:underline";
