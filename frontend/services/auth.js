@@ -4,6 +4,19 @@ import api from "./api";
 const TOKEN_KEY = "auth_token";
 
 const auth = {
+
+    async register(data) {
+        const response = await api.post("/register", data);
+
+        const { token, user } = response.data.data;
+
+        if (token) {
+            localStorage.setItem(TOKEN_KEY, token);
+        }
+
+        return user;
+    },
+
     async login(credentials) {
         const response = await api.post("/login", credentials);
 

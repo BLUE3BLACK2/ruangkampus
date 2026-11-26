@@ -10,31 +10,27 @@ import {
   UserRound,
   LogOut,
 } from "lucide-react";
-import auth from "@/services/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminHeader() {
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { logout } = useAuth();
   
   const handleLogout = async () => {
-        if (loggingOut) return;
+      if (loggingOut) return;
 
-        setLoggingOut(true);
-        setProfileOpen(false);
+      setLoggingOut(true);
+      setProfileOpen(false);
 
-        try {
-            await auth.logout();
-        } finally {
-            localStorage.removeItem("auth_token");
-
-            // Reset status logout agar tidak terbawa saat login kembali
-            setLoggingOut(false);
-
-            router.replace("/login");
-            router.refresh();
-        }
-    };
+      try {
+          await logout();
+          router.replace("/login");
+      } finally {
+          router.refresh();
+      }
+  };
 
   return (
     <header className="flex min-h-24 items-center justify-between gap-4 border-b border-slate-100 bg-white px-5 py-4 md:px-8">

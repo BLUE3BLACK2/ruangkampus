@@ -21,12 +21,13 @@ class RoomController extends Controller
         ];
     }
 
-    private function indexQuery(Request $request)
+    private function indexQuery(Request $request, bool $public = false)
     {
         $validated = $request->validate($this->indexRules());
 
         return Room::query()
             ->with('facilities')
+            ->when($public, fn ($q) => $q->where('status', 'available'))
             ->when(filled($validated['search'] ?? null), function ($query) use ($validated) {
                 $term = '%'.$validated['search'].'%';
                 $query->where(fn ($q) => $q
@@ -46,7 +47,7 @@ class RoomController extends Controller
     /** Public catalog. Only rooms a visitor may see at all. */
     public function index(Request $request)
     {
-        return RoomResource::collection($this->indexQuery($request));
+        return RoomResource::collection($this->indexQuery($request, true));
     }
 
     /** Admin list. Same shape, so one component can render both. */

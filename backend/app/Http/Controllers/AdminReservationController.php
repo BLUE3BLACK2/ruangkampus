@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
+use App\Models\Room;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -101,6 +102,7 @@ class AdminReservationController extends Controller
      * Baris dikunci supaya tidak bertabrakan dengan pembatalan oleh pemohon:
      * siapa yang lebih dulu memegang kunci, dialah yang menentukan status akhir.
      */
+
     private function decide(
         Request $request,
         Reservation $reservation,
@@ -111,12 +113,45 @@ class AdminReservationController extends Controller
         $admin = $request->user();
 
         $decided = DB::transaction(function () use ($reservation, $admin, $newStatus, $notes, $defaultLogNote) {
-            $current = Reservation::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
+            $current = Reservation::whereKey($reservation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if ($current->status !== 'pending') {
                 throw ValidationException::withMessages([
                     'status' => "Reservasi berstatus {$current->status} tidak dapat diproses.",
                 ]);
+            }
+
+            // Validasi tambahan hanya saat menyetujui reservasi.
+            if ($newStatus === 'approved') {
+                $room = Room::whereKey($current->room_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if ($room->status !== 'available') {
+                    throw ValidationException::withMessages([
+                        'room' => 'Ruangan tidak tersedia untuk reservasi.',
+                    ]);
+                }
+
+                if ($current->participant_count > $room->capacity) {
+                    throw ValidationException::withMessages([
+                        'participant_count' => 'Jumlah peserta melebihi kapasitas ruangan.',
+                    ]);
+                }
+
+                if (Reservation::slotTaken(
+                    $current->room_id,
+                    $current->reservation_date->format('Y-m-d'),
+                    $current->start_time,
+                    $current->end_time,
+                    $current->id,
+                )) {
+                    throw ValidationException::withMessages([
+                        'schedule' => 'Jadwal reservasi bertabrakan dengan reservasi lain.',
+                    ]);
+                }
             }
 
             $previous = $current->status;
