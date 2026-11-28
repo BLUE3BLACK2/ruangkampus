@@ -6,12 +6,38 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/services/api";
 
-function RoomCarousel({ rooms }: { rooms: any[] }) {
+function RoomCarousel({
+  rooms,
+  reservationData,
+}: {
+  rooms: any[];
+  reservationData: {
+    date: string;
+    start: string;
+    end: string;
+    participants: string;
+    purpose: string;
+  };
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
 
   if (!rooms?.length) return null;
 
   const room = rooms[currentIndex];
+  function handleReserve() {
+    console.log("Data room AI:", room);
+    console.log("Data reservasi:", reservationData);
+    const query = new URLSearchParams({
+      date: reservationData.date,
+      start: reservationData.start,
+      end: reservationData.end,
+      participants: reservationData.participants,
+      purpose: reservationData.purpose,
+    });
+
+    router.push(`/rooms/${room.room_id}?${query.toString()}`);
+  }
 
   return (
     <div className="mt-4">
@@ -98,6 +124,14 @@ function RoomCarousel({ rooms }: { rooms: any[] }) {
           </div>
         )}
       </div>
+
+      <button
+        type="button"
+        onClick={handleReserve}
+        className="mt-3 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+      >
+        Reservasi Ruangan Ini
+      </button>
 
       {rooms.length > 1 && (
         <div className="mt-3 flex items-center justify-between">
@@ -230,7 +264,16 @@ export default function HeroSection() {
                 </span>
               </div>
 
-              <RoomCarousel rooms={alternative.recommendations} />
+              <RoomCarousel
+                rooms={alternative.recommendations}
+                reservationData={{
+                  date: result.interpreted_request?.reservation_date || "",
+                  start: alternative.start_time || "",
+                  end: alternative.end_time || "",
+                  participants: String(result.interpreted_request?.participant_count || ""),
+                  purpose: prompt,
+                }}
+              />
             </div>
           ))}
         </div>
@@ -385,7 +428,16 @@ export default function HeroSection() {
                 Ruangan yang direkomendasikan
               </h4>
 
-              <RoomCarousel rooms={result.recommendations} />
+              <RoomCarousel
+                rooms={result.recommendations}
+                reservationData={{
+                  date: result.interpreted_request?.reservation_date || "",
+                  start: result.interpreted_request?.start_time || "",
+                  end: result.interpreted_request?.end_time || "",
+                  participants: String(result.interpreted_request?.participant_count || ""),
+                  purpose: prompt,
+                }}
+              />
             </div>
           )}
 

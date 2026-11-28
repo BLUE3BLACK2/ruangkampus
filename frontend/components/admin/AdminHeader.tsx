@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -11,12 +11,38 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import api from "@/services/api";
 
 export default function AdminHeader() {
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const { logout } = useAuth();
+
+  const [pendingCount, setPendingCount] = useState(0);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  useEffect(() => {
+      const fetchPendingNotifications = async () => {
+          try {
+              const response = await api.get("/admin/reservations", {
+                  params: {
+                      per_page: 1,
+                  },
+              });
+
+              setPendingCount(response.data.summary.pending);
+          } catch (error) {
+              console.error("Gagal mengambil notifikasi:", error);
+          }
+      };
+
+      fetchPendingNotifications();
+
+      const interval = setInterval(fetchPendingNotifications, 60000);
+
+      return () => clearInterval(interval);
+  }, []);
   
   const handleLogout = async () => {
       if (loggingOut) return;
@@ -71,16 +97,62 @@ export default function AdminHeader() {
         </div>
 
         {/* Notifikasi */}
-        <button
-          type="button"
-          aria-label="Notifikasi"
-          className="relative rounded-xl p-2.5 text-slate-600 transition hover:bg-blue-50 hover:text-blue-600"
-        >
-          <Bell size={22} />
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-            3
-          </span>
-        </button>
+        <div className="relative">
+            <button
+                type="button"
+                aria-label="Notifikasi"
+                aria-expanded={notificationOpen}
+                onClick={() => setNotificationOpen(!notificationOpen)}
+                className="relative rounded-xl p-2.5 text-slate-600 transition hover:bg-blue-50 hover:text-blue-600"
+            >
+                <Bell size={22} />
+
+                {pendingCount > 0 && (
+                    <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                        {pendingCount > 99 ? "99+" : pendingCount}
+                    </span>
+                )}
+            </button>
+
+            {notificationOpen && (
+                <div className="absolute right-0 top-full z-50 mt-3 w-80 overflow-hidden rounded-xl border border-slate-100 bg-white shadow-xl">
+                    <div className="border-b border-slate-100 px-4 py-3">
+                        <p className="text-sm font-semibold text-slate-800">
+                            Notifikasi
+                        </p>
+                        <p className="text-xs text-slate-500">
+                            {pendingCount} permohonan menunggu persetujuan
+                        </p>
+                    </div>
+
+                    <div className="px-4 py-4">
+                        {pendingCount > 0 ? (
+                            <div className="space-y-3">
+                                <p className="text-sm text-slate-600">
+                                    Terdapat {pendingCount} permohonan reservasi
+                                    yang perlu ditinjau.
+                                </p>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setNotificationOpen(false);
+                                        router.push("/admin/reservations");
+                                    }}
+                                    className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                                >
+                                    Lihat Permohonan
+                                </button>
+                            </div>
+                        ) : (
+                            <p className="py-2 text-center text-sm text-slate-500">
+                                Tidak ada permohonan yang menunggu.
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
 
         {/* Profil Admin */}
         <div className="relative">
