@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PublicRoomDemandController;
 use App\Http\Controllers\Admin\RoomAnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminReservationController;
@@ -41,6 +42,9 @@ Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
 // Public facility routes
 Route::get('/facilities', [FacilityController::class, 'index']);
+
+// Public room demand indicator
+Route::get('/room-demand', [PublicRoomDemandController::class, 'index']);
 
 Route::middleware('auth:sanctum')
     ->prefix('room-assistant')

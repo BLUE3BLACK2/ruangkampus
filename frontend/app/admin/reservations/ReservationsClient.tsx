@@ -168,6 +168,7 @@ export default function ReservationsPage() {
     const [status, setStatus] = useState("pending");
     const [date, setDate] = useState("");
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -263,6 +264,21 @@ export default function ReservationsPage() {
         } finally {
             setProcessing(false);
         }
+    };
+
+    const handleGoToPage = () => {
+        const target = Number(goToPage);
+
+        if (
+            !Number.isInteger(target) ||
+            target < 1 ||
+            target > meta.last_page
+        ) {
+            return;
+        }
+
+        setPage(target);
+        setGoToPage("");
     };
 
     const resetFilters = () => {
@@ -399,7 +415,8 @@ export default function ReservationsPage() {
                                         setPage(1);
                                     }}
                                     placeholder="Cari kode atau pemohon..."
-                                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    
                                 />
                             </div>
 
@@ -593,40 +610,75 @@ export default function ReservationsPage() {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-slate-500">
-                        Menampilkan{" "}
-                        <span className="font-semibold text-slate-700">
-                            {meta.from ?? 0}-{meta.to ?? 0}
-                        </span>{" "}
-                        dari{" "}
-                        <span className="font-semibold text-slate-700">
-                            {meta.total}
-                        </span>{" "}
-                        reservasi
-                    </p>
+                <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-sm text-slate-500">
+                            Menampilkan{" "}
+                            <span className="font-semibold text-slate-700">
+                                {meta.from ?? 0}-{meta.to ?? 0}
+                            </span>{" "}
+                            dari{" "}
+                            <span className="font-semibold text-slate-700">
+                                {meta.total}
+                            </span>{" "}
+                            reservasi
+                        </p>
 
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setPage((current) => Math.max(1, current - 1))}
-                            disabled={page <= 1 || loading}
-                            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                            <ChevronLeft size={17} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                                disabled={page <= 1 || loading}
+                                className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                <ChevronLeft size={17} />
+                            </button>
 
-                        <span className="px-3 text-sm font-medium text-slate-600">
-                            Halaman {meta.current_page} dari {meta.last_page}
+                            <span className="px-3 text-sm font-medium text-slate-600">
+                                Halaman {meta.current_page} dari {meta.last_page}
+                            </span>
+
+                            <button
+                                onClick={() =>
+                                    setPage((current) => Math.min(meta.last_page, current + 1))
+                                }
+                                disabled={page >= meta.last_page || loading}
+                                className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                <ChevronRight size={17} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                        <span className="text-sm text-slate-500">
+                            Pergi ke halaman:
                         </span>
 
+                        <input
+                            type="number"
+                            min={1}
+                            max={meta.last_page}
+                            value={goToPage}
+                            onChange={(e) => setGoToPage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") handleGoToPage();
+                            }}
+                            placeholder="No. halaman"
+                            className="w-28 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+
                         <button
-                            onClick={() =>
-                                setPage((current) => Math.min(meta.last_page, current + 1))
+                            onClick={handleGoToPage}
+                            disabled={
+                                loading ||
+                                !goToPage ||
+                                Number(goToPage) < 1 ||
+                                Number(goToPage) > meta.last_page ||
+                                !Number.isInteger(Number(goToPage))
                             }
-                            disabled={page >= meta.last_page || loading}
-                            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                            <ChevronRight size={17} />
+                            Cari
                         </button>
                     </div>
                 </div>

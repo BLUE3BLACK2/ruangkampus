@@ -394,28 +394,6 @@ export default function PredictionsClient() {
                     )}
 
                     {/* Method information */}
-                    <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5">
-                        <div className="flex gap-3">
-                            <Info className="mt-0.5 shrink-0 text-blue-600" size={20} />
-                            <div>
-                                <h3 className="font-semibold text-blue-900">
-                                    Metode Prediksi
-                                </h3>
-                                <p className="mt-1 text-sm leading-relaxed text-blue-800">
-                                    Sistem menggunakan metode Same Weekday
-                                    Moving Average. Jumlah reservasi pada hari
-                                    yang sama dari maksimal empat minggu
-                                    sebelumnya dihitung rata-ratanya.
-                                </p>
-                                <p className="mt-2 text-xs text-blue-700">
-                                    Hanya reservasi dengan status approved yang
-                                    digunakan sebagai data historis. Minimal
-                                    diperlukan tiga sampel untuk menghasilkan
-                                    prediksi.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </>
             )}
         </div>

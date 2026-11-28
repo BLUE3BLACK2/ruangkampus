@@ -138,6 +138,7 @@ export default function UsersClient() {
     const [search, setSearch] = useState("");
     const [role, setRole] = useState("");
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -181,6 +182,21 @@ export default function UsersClient() {
 
         return () => clearTimeout(timer);
     }, [fetchUsers]);
+
+    const handleGoToPage = () => {
+        const target = Number(goToPage);
+
+        if (
+            !Number.isInteger(target) ||
+            target < 1 ||
+            target > meta.last_page
+        ) {
+            return;
+        }
+
+        setPage(target);
+        setGoToPage("");
+    };
 
     const resetFilters = () => {
         setSearch("");
@@ -621,44 +637,70 @@ export default function UsersClient() {
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                {/* Pagination */}
-                <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-slate-500">
-                        Menampilkan{" "}
-                        <span className="font-semibold text-slate-700">
-                            {meta.from ?? 0}-{meta.to ?? 0}
-                        </span>{" "}
-                        dari{" "}
-                        <span className="font-semibold text-slate-700">
-                            {meta.total}
-                        </span>{" "}
-                        pengguna
-                    </p>
+            {/* Pagination */}
+            <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-500">
+                    Menampilkan{" "}
+                    <span className="font-semibold text-slate-700">
+                        {meta.from ?? 0}-{meta.to ?? 0}
+                    </span>{" "}
+                    dari{" "}
+                    <span className="font-semibold text-slate-700">
+                        {meta.total}
+                    </span>{" "}
+                    pengguna
+                </p>
 
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    <button
+                        onClick={() => setPage((current) => Math.max(1, current - 1))}
+                        disabled={page <= 1 || loading}
+                        className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        <ChevronLeft size={17} />
+                    </button>
+
+                    <span className="px-3 text-sm font-medium text-slate-600">
+                        Halaman {meta.current_page} dari {meta.last_page}
+                    </span>
+
+                    <button
+                        onClick={() =>
+                            setPage((current) => Math.min(meta.last_page, current + 1))
+                        }
+                        disabled={page >= meta.last_page || loading}
+                        className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        <ChevronRight size={17} />
+                    </button>
+
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleGoToPage();
+                        }}
+                        className="flex items-center gap-2"
+                    >
+                        <input
+                            type="number"
+                            min={1}
+                            max={meta.last_page}
+                            value={goToPage}
+                            onChange={(e) => setGoToPage(e.target.value)}
+                            placeholder="Halaman"
+                            className="w-20 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+
                         <button
-                            onClick={() => setPage((current) => Math.max(1, current - 1))}
-                            disabled={page <= 1 || loading}
-                            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            type="submit"
+                            disabled={loading || !goToPage}
+                            className="rounded-lg bg-[#087DEB] px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                            <ChevronLeft size={17} />
+                            Cari
                         </button>
-
-                        <span className="px-3 text-sm font-medium text-slate-600">
-                            Halaman {meta.current_page} dari {meta.last_page}
-                        </span>
-
-                        <button
-                            onClick={() =>
-                                setPage((current) => Math.min(meta.last_page, current + 1))
-                            }
-                            disabled={page >= meta.last_page || loading}
-                            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                            <ChevronRight size={17} />
-                        </button>
-                    </div>
+                    </form>
                 </div>
             </div>
 

@@ -14,17 +14,44 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+
   title: {
     default: "RuangKuliah | Reservasi Ruangan Kampus",
     template: "%s | RuangKuliah",
   },
+
   description:
     "RuangKuliah adalah platform reservasi ruangan kampus yang memudahkan mahasiswa dan dosen mencari serta memesan ruangan.",
-};
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
+
+  openGraph: {
+    title: "RuangKuliah | Reservasi Ruangan Kampus",
+    description:
+      "Platform reservasi ruangan kampus yang memudahkan mahasiswa dan dosen mencari serta memesan ruangan.",
+    siteName: "RuangKuliah",
+    type: "website",
+    locale: "id_ID",
+    images: ["/opengraph-image.png"],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "RuangKuliah | Reservasi Ruangan Kampus",
+    description:
+      "Platform reservasi ruangan kampus untuk mahasiswa dan dosen.",
+    images: ["/opengraph-image.png"],
+  },
+};
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import PublicLayout from "@/components/public/PublicLayout";
 import api from "@/services/api";
@@ -29,6 +29,7 @@ interface Room {
 function RoomDetailContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params.id;
 
   const [room, setRoom] = useState<Room | null>(null);
@@ -60,6 +61,20 @@ function RoomDetailContent() {
 
     fetchRoom();
   }, [id]);
+
+  useEffect(() => {
+    const date = searchParams.get("date");
+    const start = searchParams.get("start");
+    const end = searchParams.get("end");
+    const participants = searchParams.get("participants");
+    const purposeValue = searchParams.get("purpose");
+
+    if (date) setReservationDate(date);
+    if (start) setStartTime(start);
+    if (end) setEndTime(end);
+    if (participants) setParticipantCount(participants);
+    if (purposeValue) setPurpose(purposeValue);
+  }, [searchParams]);
 
   const statusLabel = (status: Room["status"]) => {
     if (status === "available") return "Tersedia";

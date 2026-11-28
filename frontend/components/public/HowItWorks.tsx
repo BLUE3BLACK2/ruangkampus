@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 
 const steps = [
@@ -33,7 +34,7 @@ export default function HowItWorks() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Heading */}
         <div className="max-w-2xl">
-          <span className="text-xs font-semibold tracking-[0.16em] text-blue-600">
+          <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold tracking-wide text-blue-700">
             HOW IT WORKS
           </span>
 
@@ -43,21 +44,23 @@ export default function HowItWorks() {
           </h2>
 
           <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-            Hanya beberapa langkah untuk menemukan ruangan yang tepat dan
-            mengatur kegiatan kampusmu.
+            Hanya beberapa langkah untuk menemukan ruangan yang tepat
+            dan mengatur kegiatan kampusmu.
           </p>
         </div>
 
         {/* Steps */}
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
-            <div
+            <article
               key={step.title}
-              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50"
+              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-200/50"
             >
-              {/* Step indicator */}
-              <div className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-blue-600 transition-transform duration-300 group-hover:scale-150" />
+              {/* Step Number */}
+              <div className="flex items-center justify-between">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
                 <span className="text-xs font-medium tracking-wide text-slate-400">
                   {step.accent}
@@ -65,7 +68,7 @@ export default function HowItWorks() {
               </div>
 
               {/* Content */}
-              <div className="mt-8">
+              <div className="mt-7">
                 <h3 className="text-lg font-semibold text-slate-900 transition-colors group-hover:text-blue-600">
                   {step.title}
                 </h3>
@@ -86,31 +89,39 @@ export default function HowItWorks() {
                   />
                 ))}
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* Bottom note */}
-        <div className="mt-10 flex flex-col gap-4 rounded-2xl bg-slate-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+        {/* Bottom CTA */}
+        <div className="mt-10 flex flex-col gap-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-base font-semibold text-slate-900">
               Siap menemukan ruang yang sesuai?
             </h3>
 
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Mulai dari katalog ruangan dan temukan tempat terbaik untuk
-              kegiatanmu.
+              Mulai dari katalog ruangan dan temukan tempat terbaik
+              untuk kegiatanmu.
             </p>
           </div>
 
           <Link
             href="/rooms"
-            className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
-            Explore room catalog
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
+            Jelajahi Ruangan
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="h-4 w-4"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
           </Link>
         </div>
       </div>

@@ -21,19 +21,24 @@ class RoomController extends Controller
         ];
     }
 
-    private function indexQuery(Request $request, bool $public = false)
+    private function indexQuery(Request $request, bool $public = false, bool $codeOnly = false)
     {
         $validated = $request->validate($this->indexRules());
 
         return Room::query()
             ->with('facilities')
             ->when($public, fn ($q) => $q->where('status', 'available'))
-            ->when(filled($validated['search'] ?? null), function ($query) use ($validated) {
+            ->when(filled($validated['search'] ?? null), function ($query) use ($validated, $codeOnly) {
                 $term = '%'.$validated['search'].'%';
-                $query->where(fn ($q) => $q
-                    ->where('room_code', 'like', $term)
-                    ->orWhere('room_name', 'like', $term)
-                    ->orWhere('building', 'like', $term));
+
+                if ($codeOnly) {
+                    $query->where('room_code', 'like', $term);
+                } else {
+                    $query->where(fn ($q) => $q
+                        ->where('room_code', 'like', $term)
+                        ->orWhere('room_name', 'like', $term)
+                        ->orWhere('building', 'like', $term));
+                }
             })
             ->when(filled($validated['status'] ?? null),
                 fn ($q) => $q->where('status', $validated['status']))

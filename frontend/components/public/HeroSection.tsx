@@ -6,12 +6,38 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/services/api";
 
-function RoomCarousel({ rooms }: { rooms: any[] }) {
+function RoomCarousel({
+  rooms,
+  reservationData,
+}: {
+  rooms: any[];
+  reservationData: {
+    date: string;
+    start: string;
+    end: string;
+    participants: string;
+    purpose: string;
+  };
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
 
   if (!rooms?.length) return null;
 
   const room = rooms[currentIndex];
+  function handleReserve() {
+    console.log("Data room AI:", room);
+    console.log("Data reservasi:", reservationData);
+    const query = new URLSearchParams({
+      date: reservationData.date,
+      start: reservationData.start,
+      end: reservationData.end,
+      participants: reservationData.participants,
+      purpose: reservationData.purpose,
+    });
+
+    router.push(`/rooms/${room.room_id}?${query.toString()}`);
+  }
 
   return (
     <div className="mt-4">
@@ -98,6 +124,14 @@ function RoomCarousel({ rooms }: { rooms: any[] }) {
           </div>
         )}
       </div>
+
+      <button
+        type="button"
+        onClick={handleReserve}
+        className="mt-3 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+      >
+        Reservasi Ruangan Ini
+      </button>
 
       {rooms.length > 1 && (
         <div className="mt-3 flex items-center justify-between">
@@ -230,7 +264,16 @@ export default function HeroSection() {
                 </span>
               </div>
 
-              <RoomCarousel rooms={alternative.recommendations} />
+              <RoomCarousel
+                rooms={alternative.recommendations}
+                reservationData={{
+                  date: result.interpreted_request?.reservation_date || "",
+                  start: alternative.start_time || "",
+                  end: alternative.end_time || "",
+                  participants: String(result.interpreted_request?.participant_count || ""),
+                  purpose: prompt,
+                }}
+              />
             </div>
           ))}
         </div>
@@ -274,60 +317,6 @@ export default function HeroSection() {
             <p className="text-sm leading-6 text-slate-600">
               {result.assistant_message}
             </p>
-          </div>
-        )}
-
-        {result.interpreted_request && (
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
-            <p className="mb-3 text-xs font-bold text-slate-800">
-              Kebutuhan yang dipahami AI
-            </p>
-
-            <div className="space-y-2 text-xs text-slate-600">
-              <p>
-                <span className="font-medium">Tanggal:</span>{" "}
-                {formatDate(
-                  result.interpreted_request.reservation_date
-                )}
-              </p>
-
-              <p>
-                <span className="font-medium">Waktu:</span>{" "}
-                {formatTime(
-                  result.interpreted_request.start_time
-                )}{" "}
-                -{" "}
-                {formatTime(
-                  result.interpreted_request.end_time
-                )}
-              </p>
-
-              <p>
-                <span className="font-medium">Peserta:</span>{" "}
-                {result.interpreted_request.participant_count} orang
-              </p>
-
-              <div>
-                <span className="font-medium">Fasilitas:</span>
-
-                {result.interpreted_request.facilities?.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {result.interpreted_request.facilities.map(
-                      (facility: string, index: number) => (
-                        <span
-                          key={index}
-                          className="rounded-lg bg-blue-50 px-2.5 py-1 text-blue-700"
-                        >
-                          {facility}
-                        </span>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  <span> Tidak ada fasilitas khusus</span>
-                )}
-              </div>
-            </div>
           </div>
         )}
 
@@ -385,7 +374,16 @@ export default function HeroSection() {
                 Ruangan yang direkomendasikan
               </h4>
 
-              <RoomCarousel rooms={result.recommendations} />
+              <RoomCarousel
+                rooms={result.recommendations}
+                reservationData={{
+                  date: result.interpreted_request?.reservation_date || "",
+                  start: result.interpreted_request?.start_time || "",
+                  end: result.interpreted_request?.end_time || "",
+                  participants: String(result.interpreted_request?.participant_count || ""),
+                  purpose: prompt,
+                }}
+              />
             </div>
           )}
 

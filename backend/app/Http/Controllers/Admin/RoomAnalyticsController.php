@@ -19,11 +19,17 @@ class RoomAnalyticsController extends Controller
     /**
      * Get historical room usage statistics.
      */
-    public function overview(): JsonResponse
+    public function overview(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'period' => ['sometimes', 'string', 'in:today,week,month'],
+        ]);
+
         return response()->json([
             'success' => true,
-            'data' => $this->analyticsService->overview(),
+            'data' => $this->analyticsService->overview(
+                $validated['period'] ?? null
+            ),
         ]);
     }
 

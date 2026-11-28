@@ -23,9 +23,11 @@ class RoomUsageAnalyticsService
      * Status statistics include every reservation status
      * within the exact same historical period.
      */
-    public function overview(): array
+    public function overview(?string $period = null): array
     {
-        [$startDate, $endDate] = $this->historicalPeriod();
+        [$startDate, $endDate] = $period
+            ? $this->selectedPeriod($period)
+            : $this->historicalPeriod();
 
         /*
          * 1. Query reservasi approved untuk analisis penggunaan.
@@ -511,6 +513,33 @@ class RoomUsageAnalyticsService
             $startDate->toDateString(),
             $endDate->toDateString(),
         ];
+    }
+    
+    /**
+     * Get date range based on the selected dashboard period.
+     */
+    private function selectedPeriod(string $period): array
+    {
+        $today = CarbonImmutable::now()->startOfDay();
+
+        return match ($period) {
+            'today' => [
+                $today->toDateString(),
+                $today->toDateString(),
+            ],
+
+            'week' => [
+                $today->startOfWeek()->toDateString(),
+                $today->endOfWeek()->toDateString(),
+            ],
+
+            'month' => [
+                $today->startOfMonth()->toDateString(),
+                $today->endOfMonth()->toDateString(),
+            ],
+
+            default => $this->historicalPeriod(),
+        };
     }
 
     /**

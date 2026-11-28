@@ -72,6 +72,7 @@ export default function DashboardClient() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [period, setPeriod] = useState("month");
 
     const loadDashboard = async () => {
         try {
@@ -84,7 +85,9 @@ export default function DashboardClient() {
                 roomResponse,
                 reservationResponse,
             ] = await Promise.all([
-                api.get("/admin/analytics/overview"),
+                api.get("/admin/analytics/overview", {
+                    params: { period },
+                }),
                 api.get("/admin/analytics/predictions"),
                 api.get("/admin/rooms?per_page=1"),
                 api.get("/admin/reservations?per_page=1"),
@@ -106,7 +109,7 @@ export default function DashboardClient() {
 
     useEffect(() => {
         loadDashboard();
-    }, []);
+    }, [period]);
 
     const overview = data.overview;
     const predictions = data.predictions;
@@ -209,10 +212,22 @@ export default function DashboardClient() {
                         </p>
                     </div>
 
-                    <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                        Data Aktual
-                    </span>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <select
+                            value={period}
+                            onChange={(e) => setPeriod(e.target.value)}
+                            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        >
+                            <option value="today">Hari ini</option>
+                            <option value="week">Minggu ini</option>
+                            <option value="month">Bulan ini</option>
+                        </select>
+
+                        <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                            Data Aktual
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -592,11 +607,6 @@ export default function DashboardClient() {
                             Pantau dan kelola reservasi ruangan kampus melalui satu sistem.
                         </p>
                     </div>
-                </div>
-
-                <div className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-blue-700">
-                    RuangKuliah
-                    <ArrowUpRight size={17} />
                 </div>
             </section>
         </div>
