@@ -172,14 +172,26 @@ export default function RoomsPage() {
                 <select
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500"
                 >
-                  <option value="">Semua Kapasitas</option>
-                  <option value="10">10 Orang</option>
-                  <option value="20">20 Orang</option>
-                  <option value="30">30 Orang</option>
-                  <option value="50">50 Orang</option>
-                  <option value="100">100 Orang</option>
+                  <option value="" className="bg-white text-slate-700">
+                    Semua Kapasitas
+                  </option>
+                  <option value="10" className="bg-white text-slate-700">
+                    10 Orang
+                  </option>
+                  <option value="20" className="bg-white text-slate-700">
+                    20 Orang
+                  </option>
+                  <option value="30" className="bg-white text-slate-700">
+                    30 Orang
+                  </option>
+                  <option value="50" className="bg-white text-slate-700">
+                    50 Orang
+                  </option>
+                  <option value="100" className="bg-white text-slate-700">
+                    100 Orang
+                  </option>
                 </select>
               </div>
 
@@ -192,12 +204,20 @@ export default function RoomsPage() {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500"
                 >
-                  <option value="">Semua Status</option>
-                  <option value="available">Tersedia</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="inactive">Tidak Aktif</option>
+                  <option value="" className="bg-white text-slate-700">
+                    Semua Status
+                  </option>
+                  <option value="available" className="bg-white text-slate-700">
+                    Tersedia
+                  </option>
+                  <option value="maintenance" className="bg-white text-slate-700">
+                    Maintenance
+                  </option>
+                  <option value="inactive" className="bg-white text-slate-700">
+                    Tidak Aktif
+                  </option>
                 </select>
               </div>
 
@@ -210,12 +230,18 @@ export default function RoomsPage() {
                 <select
                   value={facilityId}
                   onChange={(e) => setFacilityId(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500"
                 >
-                  <option value="">Semua Fasilitas</option>
+                  <option value="" className="bg-white text-slate-700">
+                    Semua Fasilitas
+                  </option>
 
                   {facilities.map((facility) => (
-                    <option key={facility.id} value={facility.id}>
+                    <option
+                      key={facility.id}
+                      value={facility.id}
+                      className="bg-white text-slate-700"
+                    >
                       {facility.name}
                     </option>
                   ))}

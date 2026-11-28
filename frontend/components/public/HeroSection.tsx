@@ -320,60 +320,6 @@ export default function HeroSection() {
           </div>
         )}
 
-        {result.interpreted_request && (
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
-            <p className="mb-3 text-xs font-bold text-slate-800">
-              Kebutuhan yang dipahami AI
-            </p>
-
-            <div className="space-y-2 text-xs text-slate-600">
-              <p>
-                <span className="font-medium">Tanggal:</span>{" "}
-                {formatDate(
-                  result.interpreted_request.reservation_date
-                )}
-              </p>
-
-              <p>
-                <span className="font-medium">Waktu:</span>{" "}
-                {formatTime(
-                  result.interpreted_request.start_time
-                )}{" "}
-                -{" "}
-                {formatTime(
-                  result.interpreted_request.end_time
-                )}
-              </p>
-
-              <p>
-                <span className="font-medium">Peserta:</span>{" "}
-                {result.interpreted_request.participant_count} orang
-              </p>
-
-              <div>
-                <span className="font-medium">Fasilitas:</span>
-
-                {result.interpreted_request.facilities?.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {result.interpreted_request.facilities.map(
-                      (facility: string, index: number) => (
-                        <span
-                          key={index}
-                          className="rounded-lg bg-blue-50 px-2.5 py-1 text-blue-700"
-                        >
-                          {facility}
-                        </span>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  <span> Tidak ada fasilitas khusus</span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
         {status === "needs_clarification" && (
           <div className="mt-3 rounded-xl bg-white p-3 text-xs leading-6 text-slate-600">
             {result.missing_fields && (

@@ -3,13 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Bell,
-  Search,
-  ChevronDown,
-  UserRound,
-  LogOut,
-} from "lucide-react";
+import { Bell, ChevronDown, UserRound, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/services/api";
 
@@ -72,29 +66,6 @@ export default function AdminHeader() {
 
       {/* Aksi Header */}
       <div className="flex items-center gap-3 md:gap-5">
-        {/* Pilihan Periode */}
-        <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm lg:flex">
-          <select
-            aria-label="Pilih periode"
-            defaultValue="month"
-            className="cursor-pointer bg-transparent outline-none"
-          >
-            <option value="today">Hari ini</option>
-            <option value="week">Minggu ini</option>
-            <option value="month">Bulan ini</option>
-          </select>
-          <ChevronDown size={16} className="text-slate-400" />
-        </div>
-
-        {/* Pencarian */}
-        <div className="hidden items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex">
-          <input
-            type="text"
-            placeholder="Cari sesuatu..."
-            className="w-28 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 md:w-36"
-          />
-          <Search size={19} className="text-slate-500" />
-        </div>
 
         {/* Notifikasi */}
         <div className="relative">

@@ -81,6 +81,7 @@ export default function FacilitiesClient() {
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
 
     const [meta, setMeta] = useState({
         current_page: 1,
@@ -247,6 +248,21 @@ export default function FacilitiesClient() {
     const resetSearch = () => {
         setSearch("");
         setPage(1);
+    };
+
+    const handleGoToPage = () => {
+        const target = Number(goToPage);
+
+        if (
+            !Number.isInteger(target) ||
+            target < 1 ||
+            target > meta.last_page
+        ) {
+            return;
+        }
+
+        setPage(target);
+        setGoToPage("");
     };
 
     const roomsOnPage = facilities.reduce(
@@ -510,7 +526,7 @@ export default function FacilitiesClient() {
                         fasilitas
                     </p>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <button
                             onClick={() => setPage((current) => Math.max(1, current - 1))}
                             disabled={page <= 1 || loading}
@@ -534,6 +550,32 @@ export default function FacilitiesClient() {
                         >
                             <ChevronRight size={17} />
                         </button>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleGoToPage();
+                            }}
+                            className="flex items-center gap-2"
+                        >
+                            <input
+                                type="number"
+                                min={1}
+                                max={meta.last_page}
+                                value={goToPage}
+                                onChange={(e) => setGoToPage(e.target.value)}
+                                placeholder="Halaman"
+                                className="w-20 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                            />
+
+                            <button
+                                type="submit"
+                                disabled={loading || !goToPage}
+                                className="rounded-lg bg-[#087DEB] px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Cari
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
